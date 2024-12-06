@@ -23,6 +23,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(maddevs-trial
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        settingswindow.h settingswindow.cpp settingswindow.ui
+        graphview.h graphview.cpp graphview.ui
+        point.h point.cpp
+        graph.h graph.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET maddevs-trial APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
