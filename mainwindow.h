@@ -31,6 +31,6 @@ private:
 
 signals:
     void emitPoint(QPointF pt);
-    void emitGraph(std::vector<QPointF> ptPack);
+    void emitPoints(std::vector<QPointF> ptPack);
 };
 #endif // MAINWINDOW_H

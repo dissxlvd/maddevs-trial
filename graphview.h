@@ -14,16 +14,22 @@ public:
     explicit GraphView(QWidget *parent = nullptr);
     ~GraphView();
 
+    void generateGraphEdges(std::vector<QPointF> points);
+
 public slots:
-    void recievePoint(QPointF point);
-    void recieveGraph(std::vector<QPointF> recievedPoints);
+    void recPoint(QPointF point);
+    void recPoints(std::vector<QPointF> recievedPoints);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
     Ui::GraphView *ui;
+
+    bool pathsGenerated = false;
     std::vector<QPointF> points;
+    std::vector<QPointF> pointsSorted;
+    std::vector<std::pair<QPointF, QPointF>> paths;
 };
 
 #endif // GRAPHVIEW_H
