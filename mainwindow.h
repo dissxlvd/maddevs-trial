@@ -24,7 +24,13 @@ private slots:
 
     void on_generatePoint_clicked();
 
+    void on_generateGraph_clicked();
+
 private:
     Ui::MainWindow *ui;
+
+signals:
+    void emitPoint(QPointF pt);
+    void emitGraph(std::vector<QPointF> ptPack);
 };
 #endif // MAINWINDOW_H

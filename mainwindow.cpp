@@ -3,15 +3,21 @@
 
 #include "settingswindow.h"
 #include "graphview.h"
-#include "graph.h"
-#include "point.h"
+
+#include <cstdlib>
+#include <ctime>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    srand(static_cast<unsigned> (time(0)));
+
     GraphView *g = new GraphView(this);
-    ui->graph->setStyleSheet("border: 1px solid red"); // @graph style sheet
-    ui->graph->layout()->addWidget(g);
+    g->setAttribute(Qt::WA_DeleteOnClose, true);
+    connect(this, &MainWindow::emitPoint, g, &GraphView::recievePoint);
+    connect(this, &MainWindow::emitGraph, g, &GraphView::recieveGraph);
+    ui->graphView->setStyleSheet("border: 1px solid red"); // @graph style sheet
+    ui->graphView->layout()->addWidget(g);
 
     // Settings
     this->setWindowTitle("MadDevs | Trial Assignment");
@@ -38,12 +44,52 @@ void MainWindow::on_actionApp_Settings_triggered() {
     s->show();
 }
 
+float generateRandomFloats(){
+    float lran = -1.0;
+    float hran = 1.0;
 
-void MainWindow::on_generatePoint_clicked()
-{
-    Point *p = new Point();
-    p->_test();
+    float rf = lran + static_cast<float> (rand()) / static_cast<float> (RAND_MAX / (hran - lran));
 
-    delete p;
+    return rf;
+}
+
+bool checkFloats(float rf1, float rf2){
+    if(rf1*rf1 + rf2*rf2 < 1){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void MainWindow::on_generatePoint_clicked() {
+    float rX = generateRandomFloats();
+    float rY = generateRandomFloats();
+
+    if(checkFloats(rX, rY) == true){
+        QPointF pt(rX, rY);
+        emit emitPoint(pt);
+    } else {
+        on_generatePoint_clicked();
+    }
+}
+
+void MainWindow::on_generateGraph_clicked() {
+
+
+    std::vector<QPointF> ptPack;
+
+    for(int i = 0; i < 100; ++i){
+        float rX = generateRandomFloats();
+        float rY = generateRandomFloats();
+
+        if(checkFloats(rX, rY) == true){
+            QPointF pt(rX, rY);
+            ptPack.push_back(pt);
+        } else {
+            --i;
+        }
+    }
+
+    emit emitGraph(ptPack);
 }
 

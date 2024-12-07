@@ -1,9 +1,6 @@
 #include "graphview.h"
 #include "ui_graphview.h"
 
-#include "graph.h"
-#include "point.h"
-
 #include <QPainter>
 #include <QDebug>
 
@@ -13,6 +10,36 @@ GraphView::GraphView(QWidget *parent) : QWidget(parent), ui(new Ui::GraphView) {
 
 GraphView::~GraphView() {
     delete ui;
+}
+
+void GraphView::recievePoint(QPointF point){
+    qDebug() << point;
+    qDebug() << "Initial size: " << points.size();
+
+    if(this->points.empty()){
+        this->points.push_back(point);
+    } else {
+        this->points.clear();
+        this->points.push_back(point);
+    }
+    // this->points.push_back(point);
+
+    qDebug() << "Current size: " << points.size();
+    update();
+}
+
+void GraphView::recieveGraph(std::vector<QPointF> recievedPoints){
+    qDebug() << "Recieved point package: " << recievedPoints.size();
+    qDebug() << "Initial size: " << points.size();
+
+    this->points.clear();
+
+    foreach(QPointF rpoint, recievedPoints){
+        this->points.push_back(rpoint);
+    }
+
+    qDebug() << "Current size: " << points.size();
+    update();
 }
 
 void GraphView::paintEvent(QPaintEvent *event) {
@@ -33,7 +60,7 @@ void GraphView::paintEvent(QPaintEvent *event) {
         );
 
     // Main circle = x^2 + y^2 = r^2
-    QPointF *boundingCircleCenter = new QPointF(viewWidth/2, viewHeight/2);
+    QPointF boundingCircleCenter(viewWidth/2, viewHeight/2); // = new QPointF(viewWidth/2, viewHeight/2);
 
     int radius;
     const float screenMultiplier = 0.005;
@@ -45,8 +72,14 @@ void GraphView::paintEvent(QPaintEvent *event) {
     }
 
     painter.setPen(QPen(QColor(255, 255, 255), 1, Qt::SolidLine, Qt::RoundCap));
-    painter.drawEllipse(*boundingCircleCenter, radius * rMultiplier, radius * rMultiplier);
+    painter.drawEllipse(boundingCircleCenter, radius * rMultiplier, radius * rMultiplier);
 
     painter.setPen(QPen(QColor(0, 255, 0), 4, Qt::SolidLine, Qt::RoundCap));
     painter.drawPoint(QPoint(viewWidth/2, viewHeight/2));
+
+    painter.setPen(QPen(QColor(255, 0, 0), 4, Qt::SolidLine, Qt::RoundCap));
+    foreach (QPointF point, points) {
+        painter.drawPoint((point.x()) * radius * rMultiplier + viewWidth/2, (point.y()) * radius * rMultiplier + viewHeight/2);
+    }
+    // this->graph;
 }
