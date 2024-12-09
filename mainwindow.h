@@ -26,6 +26,8 @@ private slots:
 
     void on_generateGraph_clicked();
 
+    void on_taskProgress_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 

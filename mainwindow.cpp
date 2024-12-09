@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     g->setAttribute(Qt::WA_DeleteOnClose, true);
     connect(this, &MainWindow::emitPoint, g, &GraphView::recPoint);
     connect(this, &MainWindow::emitPoints, g, &GraphView::recPoints);
+    connect(g, &GraphView::changeStatus, this, &MainWindow::on_taskProgress_valueChanged);
     ui->graphView->setStyleSheet("border: 1px solid red"); // @graph style sheet
     ui->graphView->layout()->addWidget(g);
 
@@ -94,5 +95,11 @@ void MainWindow::on_generateGraph_clicked() {
     }
 
     emit emitPoints(ptPack);
+}
+
+
+void MainWindow::on_taskProgress_valueChanged(int value) {
+    qDebug() << value;
+    this->ui->taskProgress->setValue(value);
 }
 

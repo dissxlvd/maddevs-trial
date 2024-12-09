@@ -33,6 +33,9 @@ private:
 
     std::vector<GraphPoint> holyPoints;
     std::vector<QLineF> holyPaths;
+
+signals:
+    void changeStatus(int value);
 };
 
 #endif // GRAPHVIEW_H

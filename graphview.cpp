@@ -116,6 +116,7 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
         }
 
         this->holyPoints.push_back(gp);
+        emit changeStatus((static_cast<double>(j + 1) / points.size()) * 100);
     }
 
     foreach (GraphPoint holyPoint, holyPoints) {
@@ -140,10 +141,13 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
 void GraphView::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
+    painter.setRenderHint(QPainter::Antialiasing); // Turns on antialiasing
+
     int graphPadding = 10; // set padding from all sides
     int viewWidth = this->width();
     int viewHeight = this->height();
 
+    // Working area fill (Layer -1)
     painter.fillRect(
         graphPadding, // x position relative to container widget
         graphPadding, // y position relative to container widget
@@ -153,7 +157,6 @@ void GraphView::paintEvent(QPaintEvent *event) {
         );
 
     QPointF boundingCircleCenter(viewWidth/2, viewHeight/2); // = new QPointF(viewWidth/2, viewHeight/2);
-
     // Main circle = x^2 + y^2 = r^2
     int radius;
     const double screenMultiplier = 0.005;
@@ -163,11 +166,12 @@ void GraphView::paintEvent(QPaintEvent *event) {
     } else {
         radius = width();
     }
-
+    // Bounding circle rendering (Layer 0)
     painter.setPen(QPen(QColor(180, 180, 180), 1, Qt::SolidLine, Qt::RoundCap));
     painter.drawEllipse(boundingCircleCenter, radius * rMultiplier, radius * rMultiplier);
 
-    painter.setPen(QPen(QColor(255, 0, 255, 200), 2, Qt::SolidLine, Qt::RoundCap));
+    // Path rendering (Layer 1)
+    painter.setPen(QPen(QColor(127, 127, 127, 255), 2, Qt::SolidLine, Qt::RoundCap));
     if(this->pathsGenerated == true){
         // qDebug() << "trying to draw paths";
         for(int i = 0; i < holyPaths.size(); ++i){
@@ -188,6 +192,7 @@ void GraphView::paintEvent(QPaintEvent *event) {
         }
     }
 
+    // Points rendering (Layer 2)
     painter.setPen(QPen(QColor(222, 222, 222), 6, Qt::SolidLine, Qt::RoundCap));
     foreach (QPointF point, this->points) {
         painter.drawPoint((point.x()) * radius * rMultiplier + viewWidth/2, (point.y()) * radius * rMultiplier + viewHeight/2);
