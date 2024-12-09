@@ -46,11 +46,11 @@ void MainWindow::on_actionApp_Settings_triggered() {
 }
 
 // Pseudo-random float coordinate generator
-float generateRandomFloats(){
-    float lran = -1.0;
-    float hran = 1.0;
+double generateRandomFloats(){
+    double lran = -1.0;
+    double hran = 1.0;
 
-    float rf = lran + static_cast<float> (rand()) / static_cast<float> (RAND_MAX / (hran - lran));
+    double rf = lran + static_cast<double> (rand()) / static_cast<double> (RAND_MAX / (hran - lran));
     /// Increase or decrease rf multiplier for differen results,
     /// 100 works best imo, 10 creates a grid pattern, 1000 will be too close with pen width 6
     rf = round(rf * 100) / 100;
@@ -58,7 +58,7 @@ float generateRandomFloats(){
     return rf;
 }
 
-bool checkFloats(float rf1, float rf2){
+bool checkFloats(double rf1, double rf2){
     if(rf1*rf1 + rf2*rf2 < 1){
         return true;
     } else {
@@ -67,8 +67,8 @@ bool checkFloats(float rf1, float rf2){
 }
 
 void MainWindow::on_generatePoint_clicked() {
-    float rX = generateRandomFloats();
-    float rY = generateRandomFloats();
+    double rX = generateRandomFloats();
+    double rY = generateRandomFloats();
 
     if(checkFloats(rX, rY) == true){
         QPointF pt(rX, rY);
@@ -82,8 +82,8 @@ void MainWindow::on_generateGraph_clicked() {
     std::vector<QPointF> ptPack;
 
     for(int i = 0; i < 100; ++i){
-        float rX = generateRandomFloats();
-        float rY = generateRandomFloats();
+        double rX = generateRandomFloats();
+        double rY = generateRandomFloats();
 
         if(checkFloats(rX, rY) == true){
             QPointF pt(rX, rY);

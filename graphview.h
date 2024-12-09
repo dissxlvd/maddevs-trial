@@ -2,6 +2,7 @@
 #define GRAPHVIEW_H
 
 #include <QWidget>
+#include "graphpoint.h"
 
 namespace Ui {
 class GraphView;
@@ -28,8 +29,10 @@ private:
 
     bool pathsGenerated = false;
     std::vector<QPointF> points;
-    std::vector<QPointF> pointsSorted;
     std::vector<std::pair<QPointF, QPointF>> paths;
+
+    std::vector<GraphPoint> holyPoints;
+    std::vector<QLineF> holyPaths;
 };
 
 #endif // GRAPHVIEW_H
