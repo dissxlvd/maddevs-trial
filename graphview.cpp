@@ -26,7 +26,6 @@ void GraphView::recPoint(QPointF point){
 
         this->points.push_back(point);
     }
-    // this->points.push_back(point);
     update();
 }
 
@@ -41,15 +40,26 @@ void GraphView::recPoints(std::vector<QPointF> recievedPoints){
     update();
 }
 
+void GraphView::recStartPosition(int startPosition){
+    this->startPosition = startPosition;
+    qDebug() << this->startPosition;
+    update();
+}
+
+void GraphView::recEndPosition(int endPosition){
+    this->endPosition = endPosition;
+    qDebug() << this->endPosition;
+    update();
+}
+
+void GraphView::tryToFindPathSlot(){
+    qDebug() << "Trying to find a path through generated graph";
+}
+
 void GraphView::generateGraphEdges(std::vector<QPointF> points){
     this->paths.clear();
     this->holyPaths.clear();
     this->holyPoints.clear();
-
-    // Paths point to point, total of 100; do not include in final
-    // for(int i = 0; i < points.size() - 1; ++i){
-    //     this->paths.push_back(std::make_pair(points[i], points[i + 1]));
-    // }
 
     // Paths from each point j to each other point k, total of 9900; include in final
     int totalPathsCount = 0;
@@ -67,7 +77,7 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
                 totalPathsCount += 1;
             }
         }
-        // qDebug() << "Availible points to travel from point" << gp.getThisPoint() << ":" << gp.availablePoints.size();
+
         for(int k = 0; k < gp.availablePoints.size(); ++k){
             double dist = std::sqrt(
                 std::pow((gp.getThisPoint().x() - gp.availablePoints[k].getThisPoint().x()), 2) +
@@ -76,17 +86,6 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
 
             gp.availablePaths.push_back(std::make_pair(std::make_pair(gp.getThisPoint(), gp.availablePoints[k]), dist));
         }
-
-        // check all paths (delete later)
-        // if(j == 0){
-        //     qDebug() << "ALL paths";
-        //     for(int test = 0; test < gp.availablePaths.size(); ++test){
-        //         qDebug() << "Path" << test + 1 <<
-        //             gp.availablePaths[test].first.first.getThisPoint() <<
-        //             gp.availablePaths[test].first.second.getThisPoint() <<
-        //             "Distance:" << gp.availablePaths[test].second;
-        //     }
-        // }
 
         gp.sortByDistance(gp.availablePaths, 0, gp.availablePaths.size() - 1);
 
@@ -108,17 +107,6 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
             gp.neighbourPoints[neighbourPath] = &gp.neighbourPaths[neighbourPath].first.second;
         }
 
-        // check sorted paths (delete later)
-        // if(j == 0){
-        //     qDebug() << "Closest paths";
-        //     for(int test = 0; test < gp.neighbourPaths.size(); ++test){
-        //         qDebug() << "Path" << test + 1 <<
-        //             gp.neighbourPaths[test].first.first.getThisPoint() <<
-        //             gp.neighbourPaths[test].first.second.getThisPoint() <<
-        //             "Distance:" << gp.neighbourPaths[test].second;
-        //     }
-        // }
-
         this->holyPoints.push_back(gp);
         emit changeStatus((static_cast<double>(j + 1) / points.size()) * 100);
     }
@@ -131,13 +119,6 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
                 );
         }
     }
-
-    // qDebug() << this->paths.size();
-    // qDebug() << this->holyPaths.size();
-    // qDebug() << this->points.size();
-    // qDebug() << this->holyPoints.size();
-
-    // qDebug() << "Total paths:" << totalPathsCount;
 
     this->pathsGenerated = true;
     emit showLegend(this->pathsGenerated);
@@ -178,15 +159,7 @@ void GraphView::paintEvent(QPaintEvent *event) {
     // Path rendering (Layer 1)
     painter.setPen(QPen(QColor(127, 127, 127, 255), 1, Qt::SolidLine, Qt::RoundCap));
     if(this->pathsGenerated == true){
-        // qDebug() << "trying to draw paths";
         for(int i = 0; i < holyPaths.size(); ++i){
-            // qDebug() << "Current path: " << this->paths[i].first << this->paths[i].second;
-            // QLineF line(
-            //     this->paths[i].first.x() * radius * rMultiplier + viewWidth/2,
-            //     this->paths[i].first.y() * radius * rMultiplier + viewHeight/2,
-            //     this->paths[i].second.x() * radius * rMultiplier + viewWidth/2,
-            //     this->paths[i].second.y() * radius * rMultiplier + viewHeight/2
-            //     );
             QLineF notSoHolyLine(
                 this->holyPaths[i].x1() * radius * rMultiplier + viewWidth/2,
                 this->holyPaths[i].y1() * radius * rMultiplier + viewHeight/2,
@@ -199,16 +172,20 @@ void GraphView::paintEvent(QPaintEvent *event) {
 
     // Points rendering (Layer 2)
     foreach (QPointF point, this->points) {
-        painter.setPen(QPen(QColor(200, 200, 200), 5, Qt::SolidLine, Qt::RoundCap));
-        if(point == this->points[0]){
-            qDebug() << "Coloring START in green" << 0;
-            painter.setPen(QPen(QColor(0, 200, 0), 7, Qt::SolidLine, Qt::RoundCap));
-        } else if(point == this->points[points.size() - 1]){
-            qDebug() << "Coloring END in red" << points.size();
-            painter.setPen(QPen(QColor(200, 0, 0), 7, Qt::SolidLine, Qt::RoundCap));
+        painter.setPen(QPen(QColor(222, 222, 222), 5, Qt::SolidLine, Qt::RoundCap));
+        if(point == this->points[startPosition]/*point == this->points[0]*/){
+            qDebug() << "Coloring START in green" << this->startPosition;
+            painter.setPen(QPen(QColor(0, 222, 0), 9, Qt::SolidLine, Qt::RoundCap));
+        } else if(point == this->points[endPosition]/*point == this->points[points.size() - 1]*/){
+            qDebug() << "Coloring END in red" << this->endPosition;
+            painter.setPen(QPen(QColor(222, 0, 0), 9, Qt::SolidLine, Qt::RoundCap));
         }
 
         painter.drawPoint((point.x()) * radius * rMultiplier + viewWidth/2, (point.y()) * radius * rMultiplier + viewHeight/2);
     }
-    // this->graph;
+
+    // Path from START to END render (Layer 3)
+    if(this->finalPathReady == true){
+        // Implement bfs dfs sh*t here
+    }
 }

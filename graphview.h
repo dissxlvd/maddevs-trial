@@ -21,6 +21,11 @@ public slots:
     void recPoint(QPointF point);
     void recPoints(std::vector<QPointF> recievedPoints);
 
+    void recStartPosition(int startPosition);
+    void recEndPosition(int endPosition);
+
+    void tryToFindPathSlot();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
 
@@ -28,6 +33,10 @@ private:
     Ui::GraphView *ui;
 
     bool pathsGenerated = false;
+    bool finalPathReady = false;
+
+    int startPosition;
+    int endPosition;
 
     std::vector<QPointF> points;
     std::vector<std::pair<QPointF, QPointF>> paths;

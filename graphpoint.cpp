@@ -13,6 +13,18 @@ QPointF GraphPoint::getThisPoint(){
     return this->thisPoint;
 }
 
+bool GraphPoint::isVisited(){
+    return this->visited;
+}
+
+void GraphPoint::setVisited(){
+    this->visited = true;
+}
+
+void GraphPoint::resetVisited(){
+    this->visited = false;
+}
+
 /// QuickSort implementation
 int GraphPoint::partition(std::vector<std::pair<std::pair<GraphPoint, GraphPoint>, double>> availablePaths, int startIndex, int endIndex){
     double pivot = this->availablePaths[endIndex].second;

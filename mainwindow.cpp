@@ -15,16 +15,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     GraphView *g = new GraphView(this);
     g->setAttribute(Qt::WA_DeleteOnClose, true);
-    connect(this, &MainWindow::emitPoint, g, &GraphView::recPoint);
-    connect(this, &MainWindow::emitPoints, g, &GraphView::recPoints);
+
+    // Send
+    connect(this, &MainWindow::emitPoint, g, &GraphView::recPoint); // Sends 1 point to graph renderer
+    connect(this, &MainWindow::emitPoints, g, &GraphView::recPoints); // Sends point pack to graph renderer
+
+    connect(this, &MainWindow::emitStartPosition, g, &GraphView::recStartPosition); // Sends point pack to graph renderer
+    connect(this, &MainWindow::emitEndPosition, g, &GraphView::recEndPosition); // Sends point pack to graph renderer
+
+    connect(this, &MainWindow::tryToFindPathSignal, g, &GraphView::tryToFindPathSlot);
+
+    // Recieve
     connect(g, &GraphView::changeStatus, this, &MainWindow::on_taskProgress_valueChanged);
     connect(g, &GraphView::showLegend, this, &MainWindow::showLegend);
+
     // ui->graphView->setStyleSheet("border: 1px solid red"); // @graph style sheet
     ui->graphView->layout()->addWidget(g);
 
     // Hiding currently unavailable ui elements
     ui->debugMenu->hide();
     ui->graphLegend->hide();
+    ui->findPath->hide();
+    ui->showSummary->hide();
     ui->spLabel->hide();
     ui->spPos->hide();
     ui->epLabel->hide();
@@ -113,11 +125,10 @@ void MainWindow::on_generateGraph_clicked() {
         }
     }
 
-    this->ui->epPos->setValue(pointsQty - 1);
+    this->ui->epPos->setValue(this->ep);
 
     emit emitPoints(ptPack);
 }
-
 
 void MainWindow::on_taskProgress_valueChanged(int value) {
     // qDebug() << value;
@@ -135,15 +146,31 @@ void MainWindow::showLegend(bool pathsGenerated){
         this->ui->epPos->show();
 
         this->ui->graphLegend->show();
+        this->ui->findPath->show();
     } else {
         this->ui->graphLegend->hide();
     }
 }
 
-void MainWindow::on_spinBox_valueChanged(int pointsQty) {
+void MainWindow::on_pointsQty_valueChanged(int pointsQty){
     this->pointsQty = pointsQty;
 
     this->ui->spPos->setMaximum(pointsQty - 1);
     this->ui->epPos->setMaximum(pointsQty - 1);
+}
+
+void MainWindow::on_spPos_valueChanged(int startPosition){
+    this->sp = startPosition;
+    emit emitStartPosition(startPosition);
+}
+
+void MainWindow::on_epPos_valueChanged(int endPosition){
+    this->ep = endPosition;
+    emit emitEndPosition(endPosition);
+}
+
+
+void MainWindow::on_findPath_clicked(){
+    emit tryToFindPathSignal();
 }
 
