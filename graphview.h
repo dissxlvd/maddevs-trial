@@ -25,6 +25,7 @@ public slots:
     void recEndPosition(int endPosition);
 
     void tryToFindPathSlot();
+    //std::vector<GraphPoint> helper(GraphPoint newPos, GraphPoint prev);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -43,6 +44,9 @@ private:
 
     std::vector<GraphPoint> holyPoints;
     std::vector<QLineF> holyPaths;
+
+    std::vector<std::vector<GraphPoint>> abomination;
+    std::vector<QPointF> finalPath;
 
 signals:
     void changeStatus(int value);

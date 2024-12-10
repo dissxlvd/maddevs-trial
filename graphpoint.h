@@ -15,6 +15,7 @@ public:
     std::vector<GraphPoint> availablePoints;
     // Stores all paths on which travel is possible (no restrictions)
     std::vector<std::pair<std::pair<GraphPoint, GraphPoint>, double>> availablePaths;
+    std::vector<std::pair<std::pair<GraphPoint, GraphPoint>, double>> startToEnd;
 
     // Stores all points closest to this (max 6)
     GraphPoint* neighbourPoints[6];
