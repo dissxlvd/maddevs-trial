@@ -14,18 +14,18 @@ public:
     explicit SettingsWindow(QWidget *parent = nullptr);
     ~SettingsWindow();
 
-    // bool get_themeCheck();
-    // void set_themeCheck(bool new_themeCheck);
-
 private slots:
     void on_toolButton_toggled(bool checked);
 
+    void on_toolButton_2_clicked();
+
 private:
-    // bool themeCheck;
     Ui::SettingsWindow *ui;
+    bool debugEnabled;
 
 signals:
     void changeThemeSignal(bool sig);
+    void enableDebugMenu(bool debugEnabled);
 };
 
 #endif // SETTINGSWINDOW_H
