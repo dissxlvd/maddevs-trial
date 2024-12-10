@@ -28,8 +28,16 @@ private slots:
 
     void on_taskProgress_valueChanged(int value);
 
+    void enableDebugMenu(bool debugEnabled);
+
+    void showLegend(bool pathsGenerated);
+
+    void on_spinBox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
+
+    int pointsQty = 100;
 
 signals:
     void emitPoint(QPointF pt);

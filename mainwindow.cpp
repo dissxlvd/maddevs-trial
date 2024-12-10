@@ -18,8 +18,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(this, &MainWindow::emitPoint, g, &GraphView::recPoint);
     connect(this, &MainWindow::emitPoints, g, &GraphView::recPoints);
     connect(g, &GraphView::changeStatus, this, &MainWindow::on_taskProgress_valueChanged);
-    ui->graphView->setStyleSheet("border: 1px solid red"); // @graph style sheet
+    connect(g, &GraphView::showLegend, this, &MainWindow::showLegend);
+    // ui->graphView->setStyleSheet("border: 1px solid red"); // @graph style sheet
     ui->graphView->layout()->addWidget(g);
+
+    // Hiding currently unavailable ui elements
+    ui->debugMenu->hide();
+    ui->graphLegend->hide();
+    ui->spLabel->hide();
+    ui->spPos->hide();
+    ui->epLabel->hide();
+    ui->epPos->hide();
 
     // Settings
     this->setWindowTitle("MadDevs | Trial Assignment");
@@ -39,10 +48,20 @@ void MainWindow::changeThemeSlot(bool checked){
     }
 }
 
+void MainWindow::enableDebugMenu(bool debugEnabled){
+    qDebug() << debugEnabled;
+    if(debugEnabled){
+        this->ui->debugMenu->show();
+    } else {
+        this->ui->debugMenu->hide();
+    }
+}
+
 void MainWindow::on_actionApp_Settings_triggered() {
     SettingsWindow *s = new SettingsWindow(this);
     s->setAttribute(Qt::WA_DeleteOnClose, true);
     connect(s, &SettingsWindow::changeThemeSignal, this, &MainWindow::changeThemeSlot);
+    connect(s, &SettingsWindow::enableDebugMenu, this, &MainWindow::enableDebugMenu);
     s->show();
 }
 
@@ -82,7 +101,7 @@ void MainWindow::on_generatePoint_clicked() {
 void MainWindow::on_generateGraph_clicked() {
     std::vector<QPointF> ptPack;
 
-    for(int i = 0; i < 100; ++i){
+    for(int i = 0; i < this->pointsQty; ++i){
         double rX = generateRandomFloats();
         double rY = generateRandomFloats();
 
@@ -94,12 +113,37 @@ void MainWindow::on_generateGraph_clicked() {
         }
     }
 
+    this->ui->epPos->setValue(pointsQty - 1);
+
     emit emitPoints(ptPack);
 }
 
 
 void MainWindow::on_taskProgress_valueChanged(int value) {
-    qDebug() << value;
+    // qDebug() << value;
     this->ui->taskProgress->setValue(value);
+}
+
+void MainWindow::showLegend(bool pathsGenerated){
+    if(pathsGenerated){
+        this->ui->startingPointTip->setStyleSheet("color: #00C800");
+        this->ui->endingPointTip->setStyleSheet("color: #C80000");
+
+        this->ui->spLabel->show();
+        this->ui->spPos->show();
+        this->ui->epLabel->show();
+        this->ui->epPos->show();
+
+        this->ui->graphLegend->show();
+    } else {
+        this->ui->graphLegend->hide();
+    }
+}
+
+void MainWindow::on_spinBox_valueChanged(int pointsQty) {
+    this->pointsQty = pointsQty;
+
+    this->ui->spPos->setMaximum(pointsQty - 1);
+    this->ui->epPos->setMaximum(pointsQty - 1);
 }
 

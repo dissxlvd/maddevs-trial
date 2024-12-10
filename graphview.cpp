@@ -20,6 +20,10 @@ void GraphView::recPoint(QPointF point){
         this->points.push_back(point);
     } else {
         this->points.clear();
+        this->holyPoints.clear();
+        this->paths.clear();
+        this->holyPaths.clear();
+
         this->points.push_back(point);
     }
     // this->points.push_back(point);
@@ -43,9 +47,9 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
     this->holyPoints.clear();
 
     // Paths point to point, total of 100; do not include in final
-    for(int i = 0; i < points.size() - 1; ++i){
-        this->paths.push_back(std::make_pair(points[i], points[i + 1]));
-    }
+    // for(int i = 0; i < points.size() - 1; ++i){
+    //     this->paths.push_back(std::make_pair(points[i], points[i + 1]));
+    // }
 
     // Paths from each point j to each other point k, total of 9900; include in final
     int totalPathsCount = 0;
@@ -74,15 +78,15 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
         }
 
         // check all paths (delete later)
-        if(j == 0){
-            qDebug() << "ALL paths";
-            for(int test = 0; test < gp.availablePaths.size(); ++test){
-                qDebug() << "Path" << test + 1 <<
-                    gp.availablePaths[test].first.first.getThisPoint() <<
-                    gp.availablePaths[test].first.second.getThisPoint() <<
-                    "Distance:" << gp.availablePaths[test].second;
-            }
-        }
+        // if(j == 0){
+        //     qDebug() << "ALL paths";
+        //     for(int test = 0; test < gp.availablePaths.size(); ++test){
+        //         qDebug() << "Path" << test + 1 <<
+        //             gp.availablePaths[test].first.first.getThisPoint() <<
+        //             gp.availablePaths[test].first.second.getThisPoint() <<
+        //             "Distance:" << gp.availablePaths[test].second;
+        //     }
+        // }
 
         gp.sortByDistance(gp.availablePaths, 0, gp.availablePaths.size() - 1);
 
@@ -105,15 +109,15 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
         }
 
         // check sorted paths (delete later)
-        if(j == 0){
-            qDebug() << "Closest paths";
-            for(int test = 0; test < gp.neighbourPaths.size(); ++test){
-                qDebug() << "Path" << test + 1 <<
-                    gp.neighbourPaths[test].first.first.getThisPoint() <<
-                    gp.neighbourPaths[test].first.second.getThisPoint() <<
-                    "Distance:" << gp.neighbourPaths[test].second;
-            }
-        }
+        // if(j == 0){
+        //     qDebug() << "Closest paths";
+        //     for(int test = 0; test < gp.neighbourPaths.size(); ++test){
+        //         qDebug() << "Path" << test + 1 <<
+        //             gp.neighbourPaths[test].first.first.getThisPoint() <<
+        //             gp.neighbourPaths[test].first.second.getThisPoint() <<
+        //             "Distance:" << gp.neighbourPaths[test].second;
+        //     }
+        // }
 
         this->holyPoints.push_back(gp);
         emit changeStatus((static_cast<double>(j + 1) / points.size()) * 100);
@@ -128,14 +132,15 @@ void GraphView::generateGraphEdges(std::vector<QPointF> points){
         }
     }
 
-    qDebug() << this->paths.size();
-    qDebug() << this->holyPaths.size();
-    qDebug() << this->points.size();
-    qDebug() << this->holyPoints.size();
+    // qDebug() << this->paths.size();
+    // qDebug() << this->holyPaths.size();
+    // qDebug() << this->points.size();
+    // qDebug() << this->holyPoints.size();
 
     // qDebug() << "Total paths:" << totalPathsCount;
 
     this->pathsGenerated = true;
+    emit showLegend(this->pathsGenerated);
 }
 
 void GraphView::paintEvent(QPaintEvent *event) {
@@ -171,7 +176,7 @@ void GraphView::paintEvent(QPaintEvent *event) {
     painter.drawEllipse(boundingCircleCenter, radius * rMultiplier, radius * rMultiplier);
 
     // Path rendering (Layer 1)
-    painter.setPen(QPen(QColor(127, 127, 127, 255), 2, Qt::SolidLine, Qt::RoundCap));
+    painter.setPen(QPen(QColor(127, 127, 127, 255), 1, Qt::SolidLine, Qt::RoundCap));
     if(this->pathsGenerated == true){
         // qDebug() << "trying to draw paths";
         for(int i = 0; i < holyPaths.size(); ++i){
@@ -193,8 +198,16 @@ void GraphView::paintEvent(QPaintEvent *event) {
     }
 
     // Points rendering (Layer 2)
-    painter.setPen(QPen(QColor(222, 222, 222), 6, Qt::SolidLine, Qt::RoundCap));
     foreach (QPointF point, this->points) {
+        painter.setPen(QPen(QColor(200, 200, 200), 5, Qt::SolidLine, Qt::RoundCap));
+        if(point == this->points[0]){
+            qDebug() << "Coloring START in green" << 0;
+            painter.setPen(QPen(QColor(0, 200, 0), 7, Qt::SolidLine, Qt::RoundCap));
+        } else if(point == this->points[points.size() - 1]){
+            qDebug() << "Coloring END in red" << points.size();
+            painter.setPen(QPen(QColor(200, 0, 0), 7, Qt::SolidLine, Qt::RoundCap));
+        }
+
         painter.drawPoint((point.x()) * radius * rMultiplier + viewWidth/2, (point.y()) * radius * rMultiplier + viewHeight/2);
     }
     // this->graph;

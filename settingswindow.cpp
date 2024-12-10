@@ -8,6 +8,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QWidget(parent), ui(new Ui::Se
     ui->setupUi(this);
 
     // Settings
+    this->debugEnabled = false;
     this->setWindowFlag(Qt::Window);
     this->setWindowTitle("MadDevs | App Settings");
     this->setMinimumSize(320, 400);
@@ -23,3 +24,9 @@ void SettingsWindow::on_toolButton_toggled(bool checked) {
     qDebug() << checked;
     emit changeThemeSignal(checked);
 }
+
+void SettingsWindow::on_toolButton_2_clicked(){
+    this->debugEnabled = !this->debugEnabled;
+    emit enableDebugMenu(this->debugEnabled);
+}
+

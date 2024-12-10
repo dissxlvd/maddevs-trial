@@ -28,6 +28,7 @@ private:
     Ui::GraphView *ui;
 
     bool pathsGenerated = false;
+
     std::vector<QPointF> points;
     std::vector<std::pair<QPointF, QPointF>> paths;
 
@@ -36,6 +37,7 @@ private:
 
 signals:
     void changeStatus(int value);
+    void showLegend(bool pathsGenerated);
 };
 
 #endif // GRAPHVIEW_H
