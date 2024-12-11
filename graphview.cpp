@@ -221,6 +221,5 @@ void GraphView::paintEvent(QPaintEvent *event) {
     // Path from START to END render (Layer 3)
     if(this->finalPathReady == true){
         qDebug() << finalPath.size();
-        // Implement bfs dfs sh*t here
     }
 }
