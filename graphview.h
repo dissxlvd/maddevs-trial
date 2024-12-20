@@ -36,8 +36,8 @@ private:
     bool pathsGenerated = false;
     bool finalPathReady = false;
 
-    int startPosition;
-    int endPosition;
+    int startPosition = 0;
+    int endPosition = 1;
 
     std::vector<QPointF> points;
     std::vector<std::pair<QPointF, QPointF>> paths;
