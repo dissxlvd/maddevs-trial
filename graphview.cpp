@@ -60,34 +60,8 @@ void GraphView::recEndPosition(int endPosition){
     update();
 }
 
-// std::vector<GraphPoint> GraphView::helper(GraphPoint newPos, GraphPoint prev){
-//     qDebug() << "helper call";
-//     std::vector<GraphPoint> tmp;
-
-//     for (int i = 0; i < newPos.neighbourPaths.size(); ++i) {
-//         if(newPos.neighbourPaths[i].first.second.getThisPoint() == this->holyPoints[startPosition].getThisPoint() ||
-//             newPos.neighbourPaths[i].first.second.getThisPoint() == prev.getThisPoint()){
-//             continue;
-//         } else {
-//             if(newPos.neighbourPaths[i].first.second.getThisPoint() == this->holyPoints[endPosition].getThisPoint()){
-//                 qDebug() << "BINGO";
-//             }
-//             tmp.push_back(newPos.getThisPoint());
-//             helper(*newPos.neighbourPoints[i], newPos);
-//         }
-//     }
-
-//     return tmp;
-// }
-
 void GraphView::tryToFindPathSlot(){
-//     qDebug() << "Trying to find a path through generated graph";
 
-//     for (int i = 0; i < this->holyPoints[this->startPosition].neighbourPaths.size() - 1; ++i) {
-//         this->abomination.push_back(helper(*this->holyPoints[this->startPosition].neighbourPoints[i], *this->holyPoints[this->startPosition].neighbourPoints[i]));
-//     }
-
-//     qDebug();
 }
 
 void GraphView::generateGraphEdges(std::vector<QPointF> points){
@@ -219,11 +193,7 @@ void GraphView::paintEvent(QPaintEvent *event) {
     }
 
     // Path from START to END render (Layer 3)
-    try{
-        if(this->finalPathReady == true){
-            qDebug() << finalPath.size();
-        }
-    } catch(...) {
-        qDebug() << "dfgjhklk;l";
+    if(this->finalPathReady == true){
+        qDebug() << finalPath.size();
     }
 }
